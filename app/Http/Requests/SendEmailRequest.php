@@ -26,6 +26,7 @@ class SendEmailRequest extends FormRequest
             'data.*.email' => 'required|email',
             'data.*.body' => 'required',
             'data.*.subject' => 'required',
+            'api_token' => 'required'
         ];
     }
 }

@@ -10,8 +10,10 @@ use App\Utilities\Contracts\RedisHelperInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class EmailController extends Controller
 {
@@ -26,37 +28,63 @@ class EmailController extends Controller
     {
         //Validate the form data using FormRequest and get the validated data
         $validated = $request->validated();
+        //Authorize the current user to be the same user sending the request
+        $token = PersonalAccessToken::findToken($validated['api_token']);
+        $tokenUser = $token->tokenable;
 
-        /** @var ElasticsearchHelperInterface $elasticsearchHelper */
-        $elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);
-
-
-        /** @var RedisHelperInterface $redisHelper */
-        $redisHelper = app()->make(RedisHelperInterface::class);
-
-        //Loop over validated array of emails to send
-        foreach ($validated['data'] as $data)
+        if($tokenUser->id === $user->id)
         {
-            //Dispatch a job for each email to be sent
-            SendEmail::dispatch($data['body'],$data['subject'], $data['email']);
-            //Created implementation for storeRecentMessage helper for Redis, on a per-email basis
-            $redisHelper->storeRecentMessage($user->id,$data['subject'],$data['email'], $data['body']);
-            $elasticsearchHelper->storeEmail($data['body'], $data['subject'], $data['email'], $user->id);
+            /** @var ElasticsearchHelperInterface $elasticsearchHelper */
+            $elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);
+
+            /** @var RedisHelperInterface $redisHelper */
+            $redisHelper = app()->make(RedisHelperInterface::class);
+
+            //Loop over validated array of emails to send
+            foreach ($validated['data'] as $data)
+            {
+                //Dispatch a job for each email to be sent
+                SendEmail::dispatch($data['body'],$data['subject'], $data['email']);
+                //Created implementation for storeRecentMessage helper for Redis, on a per-email basis
+                $redisHelper->storeRecentMessage($user->id,$data['subject'],$data['email'], $data['body']);
+                //Created implementation for storeRecentMessage helper for Redis, on a per-email basis
+                $elasticsearchHelper->storeEmail($data['body'], $data['subject'], $data['email'], $user->id);
+            }
+            //Return success JSON
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+        else {
+            //Token doesn't match the user provided in the API
+            return response()->json([
+                'success' => false,
+                'message' => 'Token provided does not match the user'
+            ],401);
         }
 
 
 
-        //Return success JSON
-        return response()->json([
-            'success' => true,
-        ]);
-
     }
 
     //  TODO - BONUS: implement list method
-    public function list()
-    {
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function list(Request $request)
+    {
+        $validated = $request->validate([
+            'api_token' => 'required',
+        ]);
+
+        $token = PersonalAccessToken::findToken($validated['api_token']);
+        $tokenUser = $token->tokenable;
+        return response()->json([
+            'success' => true,
+            'data' =>  Cache::tags(['emails'])->get($tokenUser->id)
+        ]);
     }
 
     /**
