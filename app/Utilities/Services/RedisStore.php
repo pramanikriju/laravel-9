@@ -8,7 +8,14 @@ use Illuminate\Support\Facades\Cache;
 class RedisStore implements RedisHelperInterface
 {
 
-    public function storeRecentMessage(mixed $id, string $messageSubject, string $toEmailAddress,  string $emailBody): void
+    /**
+     * @param mixed $id
+     * @param string $messageSubject
+     * @param string $toEmailAddress
+     * @param string $emailBody
+     * @return void
+     */
+    public function storeRecentMessage(mixed $id, string $messageSubject, string $toEmailAddress, string $emailBody): void
     {
         $existingData = Cache::tags(['emails'])->get($id);
         $existingData[] = [$toEmailAddress, $messageSubject, $emailBody];

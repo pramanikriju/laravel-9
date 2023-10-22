@@ -17,7 +17,7 @@ class AddSanctumTokenToHeaders
     {
         // If the URL contains a token parameter - attach it as the Authorization header
         if ($request->has('api_token') && !$request->headers->has('Authorization')) {
-            $request->headers->set('Authorization', 'Bearer ' . $request->token);
+            $request->headers->set('Authorization', 'Bearer ' . $request->api_token);
         }
         return $next($request);
     }

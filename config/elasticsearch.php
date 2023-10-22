@@ -44,7 +44,7 @@ return [
                     'host'              => env('ELASTICSEARCH_HOST', 'localhost'),
                     // For local development, the default Elasticsearch port is 9200.
                     // If you are connecting to an Elasticsearch instance on AWS, you probably want to set this to null
-                    'port'              => env('ELASTICSEARCH_PORT', 9200),
+                    'port'              => env('ELASTICSEARCH_PORT', null),
                     'scheme'            => env('ELASTICSEARCH_SCHEME', null),
                     'user'              => env('ELASTICSEARCH_USER', null),
                     'pass'              => env('ELASTICSEARCH_PASS', null),
