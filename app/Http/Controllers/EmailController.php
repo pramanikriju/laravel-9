@@ -75,16 +75,26 @@ class EmailController extends Controller
      */
     public function list(Request $request)
     {
+        //Validate the token is present
         $validated = $request->validate([
             'api_token' => 'required',
         ]);
-
+        //Get the token from Sanctum helper
         $token = PersonalAccessToken::findToken($validated['api_token']);
-        $tokenUser = $token->tokenable;
+        //Check if its a valid token
+        if(!empty($token))
+        {
+            //Get the user from the token
+            $tokenUser = $token->tokenable;
+            return response()->json([
+                'success' => true,
+                'data' =>  Cache::tags(['emails'])->get($tokenUser->id) //Get the cached emails for the user
+            ]);
+        }
+        //Return 403 if invalid token
         return response()->json([
-            'success' => true,
-            'data' =>  Cache::tags(['emails'])->get($tokenUser->id)
-        ]);
+            'success' => false,
+        ],403);
     }
 
     /**
@@ -93,19 +103,21 @@ class EmailController extends Controller
      */
     public function getToken(Request $request)
     {
+        //Validate login credentials
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
             'device_name' => 'required',
         ]);
-
+        //Get the user
         $user = User::where('email', $request->email)->first();
-
+        //Check the password is correct and user exists
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
+        //Return the token
         return response()->json([
             'success' => true,
             'token' =>  $user->createToken($request->device_name)->plainTextToken,
