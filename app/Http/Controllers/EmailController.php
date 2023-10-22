@@ -14,15 +14,13 @@ use Illuminate\Validation\ValidationException;
 class EmailController extends Controller
 {
     // TODO: finish implementing send method
-    public function send(SendEmailRequest $request)
+    public function send(SendEmailRequest $request, User $user)
     {
         //Validate the form data using FormRequest and get the validated data
         $validated = $request->validated();
-        //Loop over validated array of emails to send
-
 
         /** @var ElasticsearchHelperInterface $elasticsearchHelper */
-        $elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);
+        //$elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);
         // TODO: Create implementation for storeEmail and uncomment the following line
         // $elasticsearchHelper->storeEmail(...);
 
@@ -30,6 +28,15 @@ class EmailController extends Controller
         $redisHelper = app()->make(RedisHelperInterface::class);
         // TODO: Create implementation for storeRecentMessage and uncomment the following line
         // $redisHelper->storeRecentMessage(...);
+        //Loop over validated array of emails to send
+        foreach ($validated['data'] as $data)
+        {
+            //Dispatch a job for each email to be sent
+            SendEmail::dispatch($data['body'],$data['subject'], $data['email']);
+            $redisHelper->storeRecentMessage($user->id,$data['subject'],$data['email'], $data['body']);
+        }
+
+
 
         //Return success JSON
         return response()->json([

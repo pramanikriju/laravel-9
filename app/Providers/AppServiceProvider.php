@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Utilities\Contracts\RedisHelperInterface;
+use App\Utilities\Services\RedisStore;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(RedisHelperInterface::class, RedisStore::class);
+
+
     }
 
     /**
