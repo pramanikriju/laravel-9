@@ -30,9 +30,8 @@ class EmailController extends Controller
         $validated = $request->validated();
         //Authorize the current user to be the same user sending the request
         $token = PersonalAccessToken::findToken($validated['api_token']);
-        $tokenUser = $token->tokenable;
 
-        if($tokenUser->id === $user->id)
+        if(!empty($token) && $token->tokenable->id === $user->id)
         {
             /** @var ElasticsearchHelperInterface $elasticsearchHelper */
             $elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);
@@ -59,7 +58,7 @@ class EmailController extends Controller
             //Token doesn't match the user provided in the API
             return response()->json([
                 'success' => false,
-                'message' => 'Token provided does not match the user'
+                'message' => 'Token error'
             ],401);
         }
     }
