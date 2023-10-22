@@ -19,11 +19,7 @@ class EmailController extends Controller
         //Validate the form data using FormRequest and get the validated data
         $validated = $request->validated();
         //Loop over validated array of emails to send
-        foreach ($validated['data'] as $data)
-        {
-            //Dispatch a job for each email to be sent
-            SendEmail::dispatch($data['body'],$data['subject'], $data['email']);
-        }
+
 
         /** @var ElasticsearchHelperInterface $elasticsearchHelper */
         $elasticsearchHelper = app()->make(ElasticsearchHelperInterface::class);

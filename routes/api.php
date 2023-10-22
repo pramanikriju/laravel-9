@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //API route to send emails
-Route::middleware('auth:sanctum')->post('/{user}/send', [EmailController::class,'send']);
+Route::post('/{user}/send', [EmailController::class,'send']);
 
 //Define API route to get tokens
 Route::post('/sanctum/token', [EmailController::class,'getToken']);
