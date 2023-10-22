@@ -62,9 +62,6 @@ class EmailController extends Controller
                 'message' => 'Token provided does not match the user'
             ],401);
         }
-
-
-
     }
 
     //  TODO - BONUS: implement list method
