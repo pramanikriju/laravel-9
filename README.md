@@ -18,7 +18,7 @@ I chose to use sanctum to handle authentication tokens. To get a user's access t
 | `password`     | `token`           |
 | `device_name`  |                   |
 
-![img.png](img.png)
+![img](https://github.com/pramanikriju/laravel-9/assets/9090334/9b648abc-5f80-42df-882d-ce40105e69e5)
 
 After getting the token, you can make requests to the following API endpoint, which dispatches a job to send emails
 
@@ -29,7 +29,8 @@ After getting the token, you can make requests to the following API endpoint, wh
 | `data`         | `success`         |
 
 **NOTE:** The `data` parameter is an array of objects containing the email, body and subject
-![img_2.png](img_2.png)
+
+![img_2](https://github.com/pramanikriju/laravel-9/assets/9090334/fb2f0e06-6a49-4b5e-8235-fdad0bce824d)
 
 After dispatching the job, the emails are stored in Elasticsearch and Redis. 
 
@@ -44,7 +45,8 @@ I also completed the endpoint to list all the emails sent per user.
 
 **NOTE:** The `data` parameter contains an array of all sent emails. 
 
-![img_3.png](img_3.png)
+
+![img_3](https://github.com/pramanikriju/laravel-9/assets/9090334/5eb86129-24b6-4b76-89ed-95152d5a2e21)
 
 ### Tasks completed 
 1. API route to get user tokens
