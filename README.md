@@ -1,6 +1,6 @@
 <p align="center"><a href="https://autoklose.com" target="_blank"><img src="https://app.autoklose.com/images/svg/autoklose-logo-white.svg" width="400"></a></p>
 
-## Demo project
+## Evaluation project
 
 ### Steps to run
 1. ```composer install``` after cloning the repository
@@ -9,7 +9,7 @@
 
 ### Some assumptions for the project
 1. Only authorized users can send emails - the user in the URL has to match the token's user
-2. List API uses the cache to retrieve all the emails - not using persistent storage was a choice, but the instructions weren't clear
+2. List API uses the cache to retrieve all the emails - not using persistent storage was a choice, but the instructions weren't too clear about this
 3. The list API only lists the emails for the specific user using the auth token. This can be easily modified to list all emails without any auth.
 
 ### API Endpoints
