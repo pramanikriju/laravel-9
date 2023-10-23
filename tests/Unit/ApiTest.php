@@ -22,7 +22,9 @@ it('is unsuccessful with valid user but different api token in api route', funct
     $response = $this->postJson('/api/1/send?api_token=RANDOMWORDSHERE', []);
     $response->assertStatus(403);
 });
-it('is successful with valid inputs', function () {
+it('is successful with valid inputs', function (){
+    //Test successful job dispatch
+    Queue::fake();
     $user = User::factory()->create();
     $token = $user->createToken('random_device')->plainTextToken;
     $response = $this->postJson('/api/1/send?api_token=' . $token, [
@@ -35,7 +37,9 @@ it('is successful with valid inputs', function () {
         ]
     ]);
     $response->assertStatus(200);
+    Queue::assertPushed(\App\Jobs\SendEmail::class);
 });
+
 it('is unsuccessful with invalid inputs', function () {
     $user = User::factory()->create();
     $token = $user->createToken('random_device')->plainTextToken;
