@@ -46,8 +46,12 @@ class EmailController extends Controller
                 SendEmail::dispatch($data['body'],$data['subject'], $data['email']);
                 //Created implementation for storeRecentMessage helper for Redis, on a per-email basis
                 $redisHelper->storeRecentMessage($user->id,$data['subject'],$data['email'], $data['body']);
-                //Created implementation for storeRecentMessage helper for Redis, on a per-email basis
-                $elasticsearchHelper->storeEmail($data['body'], $data['subject'], $data['email'], $user->id);
+                //Check for elasticsearch for test environments
+                if(!empty(config('elasticsearch.connections.default.hosts.host')))
+                {
+                    //Created implementation for storeRecentMessage helper for Redis, on a per-email basis
+                    $elasticsearchHelper->storeEmail($data['body'], $data['subject'], $data['email'], $user->id);
+                }
             }
             //Return success JSON
             return response()->json([
@@ -59,7 +63,7 @@ class EmailController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Token error'
-            ],401);
+            ],403);
         }
     }
 
