@@ -2,5 +2,61 @@
 
 ## Demo project
 
+### Steps to run
+1. ```composer install``` after cloning the repository
+2. ```php artisan migrate --seed``` to setup the database
+3. The API endpoints are detailed below
+
+### API Endpoints
+I chose to use sanctum to handle authentication tokens. To get a user's access token, you can use the following endpoint - 
+
+``` /api/sanctum/token```
+
+| Request Params | Expected response |
+|----------------|-------------------|
+| `email`        | `success`         |
+| `password`     | `token`           |
+| `device_name`  |                   |
+
+![img.png](img.png)
+
+After getting the token, you can make requests to the following API endpoint, which dispatches a job to send emails
+
+```api/{{user}}/send?api_token={{API_TOKEN}}```
+
+| Request Params | Expected response |
+|----------------|-------------------|
+| `data`         | `success`         |
+
+**NOTE:** The `data` parameter is an array of objects containing the email, body and subject
+![img_2.png](img_2.png)
+
+After dispatching the job, the emails are stored in Elasticsearch and Redis. 
+
+I also completed the endpoint to list all the emails sent per user.
+
+```api/list?api_token={{API_TOKEN}}```
+
+| Request Params | Expected response |
+|----------------|-------------------|
+|                | `success`         |
+|                | `data`            |
+
+**NOTE:** The `data` parameter contains an array of all sent emails. 
+
+![img_3.png](img_3.png)
+
 ### Tasks completed 
-1. API route to send 
+1. API route to get user tokens
+2. API route to send emails
+3. Validate incoming request 
+4. Dispatch job to send emails asynchronously
+5. Store the email information in Elasticsearch using the provided interface
+6. Cache the email information using Redis in RedisHelperInterface 
+7. Added Tests to check for the validation of API requests, dispatch of Jobs using PEST
+
+
+### Bonus Tasks
+1. ✅ API route for `api/list` to see all emails sent by a user
+2. ✅ Unit test the `api/list` route 
+3. ✅ Upgrade the project to Laravel 10 

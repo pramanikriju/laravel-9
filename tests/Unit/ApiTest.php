@@ -64,3 +64,25 @@ it('is unsuccessful with invalid inputs', function () {
     ]);
     $responseMissingEmail->assertStatus(422);
 });
+it('is successful with list api', function (){
+    //Test successful job dispatch
+    Queue::fake();
+    $user = User::factory()->create();
+    $token = $user->createToken('random_device')->plainTextToken;
+    $response = $this->postJson('/api/1/send?api_token=' . $token, [
+        'data' => [
+            [
+                'email' => 'test@example.com',
+                'subject' => 'subject goes here',
+                'body' => 'Body goes here'
+            ]
+        ]
+    ]);
+    $response->assertStatus(200);
+
+    $listAPIresponse = $this->postJson('/api/list?api_token=' . $token);
+    $data = $listAPIresponse->getOriginalContent()['data'];
+    $this->assertSame('test@example.com',$data[0][0]);
+    $this->assertSame('subject goes here',$data[0][1]);
+    $this->assertSame('Body goes here',$data[0][2]);
+});
