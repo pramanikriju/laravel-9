@@ -7,6 +7,11 @@
 2. ```php artisan migrate --seed``` to setup the database
 3. The API endpoints are detailed below
 
+### Some assumptions for the project
+1. Only authorized users can send emails - the user in the URL has to match the token's user
+2. List API uses the cache to retrieve all the emails - not using persistent storage was a choice, but the instructions weren't clear
+3. The list API only lists the emails for the specific user using the auth token. This can be easily modified to list all emails without any auth.
+
 ### API Endpoints
 I chose to use sanctum to handle authentication tokens. To get a user's access token, you can use the following endpoint - 
 
